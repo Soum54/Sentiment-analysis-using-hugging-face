@@ -23,7 +23,7 @@ def analyze_sentiment(text):
     return f"{sentiment} {emoji}"
 
 # Streamlit UI elements
-st.title("Sentiment Analysis with Soumi's Model")
+st.title("Sentiment Analysis using hugging face")
 
 st.write("""
 Upload a CSV file with a 'Text' column or input your own text to perform sentiment analysis.
