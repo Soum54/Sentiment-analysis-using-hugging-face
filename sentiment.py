@@ -11,19 +11,19 @@ def analyze_sentiment(text):
     sentiment = result[0]['label']
 
     # Map the sentiment to an emoji
-    if sentiment == 'LABEL_2':  # Assuming 'LABEL_2' is Positive
+    if sentiment == 'positive':
         emoji = "😊"
-    elif sentiment == 'LABEL_1':  # Assuming 'LABEL_1' is Neutral
+    elif sentiment == 'neutral':
         emoji = "😐"
-    elif sentiment == 'LABEL_0':  # Assuming 'LABEL_0' is Negative
+    elif sentiment == 'negative':
         emoji = "😞"
     else:
         emoji = "😊"  # Fallback emoji for unexpected labels
 
-    return f"{sentiment} {emoji}"
+    return f"{sentiment.capitalize()} {emoji}"
 
 # Streamlit UI elements
-st.title("Sentiment Analysis using hugging face")
+st.title("Sentiment Analysis using Hugging Face")
 
 st.write("""
 Upload a CSV file with a 'Text' column or input your own text to perform sentiment analysis.
@@ -34,15 +34,20 @@ The model used is fine-tuned for customer feedback sentiment analysis.
 st.header("Analyze Sentiment of a Single Text")
 user_input = st.text_input("Enter text for sentiment analysis")
 
-if user_input:
-    sentiment_result = analyze_sentiment(user_input)
-    st.write(f"Sentiment: {sentiment_result}")
+# Add analyze button for single text input
+if st.button("Analyze Text"):
+    if user_input:
+        sentiment_result = analyze_sentiment(user_input)
+        st.write(f"Sentiment: {sentiment_result}")
+    else:
+        st.warning("Please enter some text to analyze.")
 
 # File upload for batch sentiment analysis
 st.header("Batch Sentiment Analysis via CSV")
 uploaded_file = st.file_uploader("Upload a CSV file", type="csv")
 
-if uploaded_file is not None:
+# Add analyze button for CSV file
+if uploaded_file:
     # Read the uploaded CSV file
     df = pd.read_csv(uploaded_file)
     
@@ -51,22 +56,23 @@ if uploaded_file is not None:
         st.write("Data Preview:")
         st.write(df.head())
         
-        # Apply sentiment analysis to each row in the DataFrame
-        st.write("Performing sentiment analysis...")
-        df['Sentiment'] = df['Text'].apply(analyze_sentiment)
-        
-        # Show the result in Streamlit
-        st.write("Sentiment analysis results:")
-        st.write(df.head())
-        
-        # Provide a download button for the updated CSV
-        csv = df.to_csv(index=False)
-        st.download_button(
-            label="Download results as CSV",
-            data=csv,
-            file_name='sentiment_analysis_results_with_emoji.csv',
-            mime='text/csv',
-        )
+        if st.button("Analyze CSV"):
+            # Apply sentiment analysis to each row in the DataFrame
+            st.write("Performing sentiment analysis...")
+            df['Sentiment'] = df['Text'].apply(analyze_sentiment)
+            
+            # Show the result in Streamlit
+            st.write("Sentiment analysis results:")
+            st.write(df.head())
+            
+            # Provide a download button for the updated CSV
+            csv = df.to_csv(index=False)
+            st.download_button(
+                label="Download results as CSV",
+                data=csv,
+                file_name='sentiment_analysis_results_with_emoji.csv',
+                mime='text/csv',
+            )
     else:
         st.error("The uploaded CSV does not contain a 'Text' column.")
 else:
