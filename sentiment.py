@@ -17,8 +17,6 @@ def analyze_sentiment(text):
         emoji = "😐"
     elif sentiment == 'negative':
         emoji = "😞"
-    else:
-        emoji = "😊"  # Fallback emoji for unexpected labels
 
     return f"{sentiment.capitalize()} {emoji}"
 
