@@ -9,15 +9,17 @@ pipe = pipeline("text-classification", model="anchit48/fine-tuned-sentiment-anal
 def analyze_sentiment(text):
     result = pipe(text)
     sentiment = result[0]['label']
-
+    
     # Map the sentiment to an emoji
-    if sentiment == 'positive':
+    if sentiment == "POSITIVE":
         emoji = "😊"
-    elif sentiment == 'neutral':
+    elif sentiment == "NEGATIVE":
+        emoji = "😢"
+    elif sentiment == "NEUTRAL":
         emoji = "😐"
-    elif sentiment == 'negative':
-        emoji = "😞"
-
+    else:
+        emoji = "🤔"  # Fallback for any other cases
+    
     return f"{sentiment.capitalize()} {emoji}"
 
 # Streamlit UI elements
