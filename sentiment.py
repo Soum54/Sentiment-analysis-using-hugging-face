@@ -3,7 +3,7 @@ import pandas as pd
 from transformers import pipeline
 
 # Load the sentiment analysis pipeline
-pipe = pipeline("text-classification", model="anchit48/fine-tuned-sentiment-analysis-customer-feedback")
+pipe = pipeline("text-classification", model="cardiffnlp/twitter-roberta-base-sentiment-latest")
 
 # Define a function to analyze sentiment and return emoji
 def analyze_sentiment(text):
