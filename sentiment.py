@@ -18,12 +18,12 @@ def analyze_sentiment(text):
     elif sentiment == 'LABEL_0':  # Assuming 'LABEL_0' is Negative
         emoji = "😞"
     else:
-        emoji = "🤔"  # Fallback emoji for unexpected labels
+        emoji = "😊"  # Fallback emoji for unexpected labels
 
     return f"{sentiment} {emoji}"
 
 # Streamlit UI elements
-st.title("Sentiment Analysis with Emojis")
+st.title("Sentiment Analysis with Soumi's Model")
 
 st.write("""
 Upload a CSV file with a 'Text' column or input your own text to perform sentiment analysis.
