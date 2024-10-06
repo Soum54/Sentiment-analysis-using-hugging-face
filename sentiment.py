@@ -5,27 +5,27 @@ from transformers import pipeline
 # Load the sentiment analysis pipeline
 pipe = pipeline("text-classification", model="cardiffnlp/twitter-roberta-base-sentiment-latest")
 
+
 # Define a function to analyze sentiment and return emoji
-# Updated function to analyze sentiment and return specific emojis
 def analyze_sentiment(text):
     result = pipe(text)
-    sentiment = result[0]['label']
-    
-    # Map the sentiment to more specific emojis
-    if sentiment == "LABEL_2":  # Very Positive
-        emoji = "😁"  # Grinning Face
-    elif sentiment == "LABEL_1":  # Positive
-        emoji = "😊"  # Smiling Face
-    elif sentiment == "LABEL_0":  # Neutral
-        emoji = "😐"  # Neutral Face
-    elif sentiment == "LABEL_-1":  # Negative
-        emoji = "😞"  # Disappointed Face
-    elif sentiment == "LABEL_-2":  # Very Negative
-        emoji = "😡"  # Angry Face
+    label = result[0]['label']
+
+    # Map the model's labels to the correct sentiment and emoji
+    if label == "LABEL_2":  # POSITIVE sentiment
+        sentiment = "Positive"
+        emoji = "😊"
+    elif label == "LABEL_0":  # NEGATIVE sentiment
+        sentiment = "Negative"
+        emoji = "😢"
+    elif label == "LABEL_1":  # NEUTRAL sentiment
+        sentiment = "Neutral"
+        emoji = "😐"
     else:
+        sentiment = "Unknown"
         emoji = "🤔"  # Fallback for any other cases
-    
-    return f"{sentiment.capitalize()} {emoji}"
+
+    return f"{sentiment} {emoji}"
 
 
 # Streamlit UI elements
