@@ -8,8 +8,8 @@ pipe = pipeline("text-classification", model="cardiffnlp/twitter-roberta-base-se
 # Define a function to analyze sentiment and return emoji
 def analyze_sentiment(text):
     result = pipe(text)
-    sentiment = result[0]['label']
-    
+    sentiment = result[0]['label'].strip().upper()  # Normalize sentiment label
+
     # Map the sentiment to an emoji
     if sentiment == "POSITIVE":
         emoji = "😊"
@@ -19,7 +19,7 @@ def analyze_sentiment(text):
         emoji = "😐"
     else:
         emoji = "🤔"  # Fallback for any other cases
-    
+
     return f"{sentiment.capitalize()} {emoji}"
 
 # Streamlit UI elements
@@ -50,21 +50,21 @@ uploaded_file = st.file_uploader("Upload a CSV file", type="csv")
 if uploaded_file:
     # Read the uploaded CSV file
     df = pd.read_csv(uploaded_file)
-    
+
     # Check if the 'Text' column exists
     if 'Text' in df.columns:
         st.write("Data Preview:")
         st.write(df.head())
-        
+
         if st.button("Analyze CSV"):
             # Apply sentiment analysis to each row in the DataFrame
             st.write("Performing sentiment analysis...")
             df['Sentiment'] = df['Text'].apply(analyze_sentiment)
-            
+
             # Show the result in Streamlit
             st.write("Sentiment analysis results:")
             st.write(df.head())
-            
+
             # Provide a download button for the updated CSV
             csv = df.to_csv(index=False)
             st.download_button(
