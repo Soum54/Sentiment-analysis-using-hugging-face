@@ -5,28 +5,22 @@ from transformers import pipeline
 # Load the sentiment analysis pipeline
 pipe = pipeline("text-classification", model="cardiffnlp/twitter-roberta-base-sentiment-latest")
 
-
 # Define a function to analyze sentiment and return emoji
 def analyze_sentiment(text):
     result = pipe(text)
-    label = result[0]['label']
-
-    # Map the model's labels to the correct sentiment and emoji
-    if label == "LABEL_2":  # POSITIVE sentiment
-        sentiment = "Positive"
+    sentiment = result[0]['label']
+    
+    # Map the sentiment to an emoji
+    if sentiment == "POSITIVE":
         emoji = "😊"
-    elif label == "LABEL_0":  # NEGATIVE sentiment
-        sentiment = "Negative"
+    elif sentiment == "NEGATIVE":
         emoji = "😢"
-    elif label == "LABEL_1":  # NEUTRAL sentiment
-        sentiment = "Neutral"
+    elif sentiment == "NEUTRAL":
         emoji = "😐"
     else:
-        sentiment = "Unknown"
         emoji = "🤔"  # Fallback for any other cases
-
-    return f"{sentiment} {emoji}"
-
+    
+    return f"{sentiment.capitalize()} {emoji}"
 
 # Streamlit UI elements
 st.title("Sentiment Analysis using Hugging Face")
