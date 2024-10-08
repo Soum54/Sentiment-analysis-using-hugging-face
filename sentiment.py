@@ -5,10 +5,11 @@ from transformers import pipeline
 # Load the sentiment analysis pipeline
 pipe = pipeline("text-classification", model="cardiffnlp/twitter-roberta-base-sentiment-latest")
 
-# Define a function to analyze sentiment and return emoji
+# Define a function to analyze sentiment and return emoji and score
 def analyze_sentiment(text):
-    result = pipe(text)
-    sentiment = result[0]['label'].strip().upper()  # Normalize sentiment label
+    result = pipe(text)[0]  # Get the first (and only) result
+    sentiment = result['label'].strip().upper()  # Normalize sentiment label
+    score = result['score']  # Get the confidence score
 
     # Map the sentiment to an emoji
     if sentiment == "POSITIVE":
@@ -20,7 +21,10 @@ def analyze_sentiment(text):
     else:
         emoji = "🤔"  # Fallback for any other cases
 
-    return f"{sentiment.capitalize()} {emoji}"
+    # Format the score as a percentage with two decimal places
+    score_percent = f"{score * 100:.2f}%"
+
+    return sentiment.capitalize(), emoji, score_percent
 
 # Streamlit UI elements
 st.title("Sentiment Analysis using Hugging Face")
@@ -37,8 +41,9 @@ user_input = st.text_input("Enter text for sentiment analysis")
 # Add analyze button for single text input
 if st.button("Analyze Text"):
     if user_input:
-        sentiment_result = analyze_sentiment(user_input)
-        st.write(f"Sentiment: {sentiment_result}")
+        sentiment, emoji, score = analyze_sentiment(user_input)
+        st.write(f"**Sentiment:** {sentiment} {emoji}")
+        st.write(f"**Confidence Score:** {score}")
     else:
         st.warning("Please enter some text to analyze.")
 
@@ -53,16 +58,21 @@ if uploaded_file:
 
     # Check if the 'Text' column exists
     if 'Text' in df.columns:
-        st.write("Data Preview:")
+        st.write("**Data Preview:**")
         st.write(df.head())
 
         if st.button("Analyze CSV"):
-            # Apply sentiment analysis to each row in the DataFrame
+            # Perform sentiment analysis and store results
             st.write("Performing sentiment analysis...")
-            df['Sentiment'] = df['Text'].apply(analyze_sentiment)
+            sentiments = df['Text'].apply(analyze_sentiment)
+
+            # Split the sentiments into separate columns
+            df['Sentiment'] = sentiments.apply(lambda x: x[0])
+            df['Emoji'] = sentiments.apply(lambda x: x[1])
+            df['Confidence Score'] = sentiments.apply(lambda x: x[2])
 
             # Show the result in Streamlit
-            st.write("Sentiment analysis results:")
+            st.write("**Sentiment analysis results:**")
             st.write(df.head())
 
             # Provide a download button for the updated CSV
@@ -70,7 +80,7 @@ if uploaded_file:
             st.download_button(
                 label="Download results as CSV",
                 data=csv,
-                file_name='sentiment_analysis_results_with_emoji.csv',
+                file_name='sentiment_analysis_results_with_emoji_and_score.csv',
                 mime='text/csv',
             )
     else:
