@@ -5,7 +5,7 @@ from transformers import pipeline
 # Load the sentiment analysis pipeline
 pipe = pipeline("text-classification", model="cardiffnlp/twitter-roberta-base-sentiment-latest")
 
-# Define a function to analyze sentiment and return emoji and score
+# Define a function to analyze sentiment and return emoji, score, and the label
 def analyze_sentiment(text):
     result = pipe(text)[0]  # Get the first (and only) result
     sentiment = result['label'].strip().upper()  # Normalize sentiment label
@@ -23,11 +23,10 @@ def analyze_sentiment(text):
 
     # Format the score as a percentage with two decimal places
     score_percent = f"{score * 100:.2f}%"
-
     return sentiment.capitalize(), emoji, score_percent
 
 # Streamlit UI elements
-st.title("Sentiment Analysis using Hugging Face")
+st.title("Sentiment Analysis using Hugging Face with Animated Emoji Reactions")
 
 st.write("""
 Upload a CSV file with a 'Text' column or input your own text to perform sentiment analysis.
@@ -38,12 +37,40 @@ The model used is fine-tuned for customer feedback sentiment analysis.
 st.header("Analyze Sentiment of a Single Text")
 user_input = st.text_input("Enter text for sentiment analysis")
 
+# Function to display moving emojis based on sentiment
+def display_moving_emojis(sentiment):
+    st.markdown('''
+    <style>
+    @keyframes move {
+      0% {top: 100vh;}
+      100% {top: -50px;}
+    }
+    .emoji {
+      position: absolute;
+      left: 50%;
+      animation: move 5s infinite;
+      font-size: 50px;
+    }
+    .emoji.positive { left: 50%; }
+    .emoji.negative { left: 40%; }
+    .emoji.neutral { left: 60%; }
+    </style>
+    ''', unsafe_allow_html=True)
+
+    if sentiment == "Positive":
+        st.markdown('<div class="emoji positive">😊</div>', unsafe_allow_html=True)
+    elif sentiment == "Negative":
+        st.markdown('<div class="emoji negative">😢</div>', unsafe_allow_html=True)
+    elif sentiment == "Neutral":
+        st.markdown('<div class="emoji neutral">😐</div>', unsafe_allow_html=True)
+
 # Add analyze button for single text input
 if st.button("Analyze Text"):
     if user_input:
         sentiment, emoji, score = analyze_sentiment(user_input)
         st.write(f"**Sentiment:** {sentiment} {emoji}")
         st.write(f"**Confidence Score:** {score}")
+        display_moving_emojis(sentiment)
     else:
         st.warning("Please enter some text to analyze.")
 
