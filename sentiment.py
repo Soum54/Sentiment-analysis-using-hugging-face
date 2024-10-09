@@ -26,7 +26,7 @@ def analyze_sentiment(text):
     return sentiment.capitalize(), emoji, score_percent
 
 # Streamlit UI elements
-st.title("Sentiment Analysis using Hugging Face with Animated Emoji Reactions")
+st.title("Sentiment Analysis using Hugging Face")
 
 st.write("""
 Upload a CSV file with a 'Text' column or input your own text to perform sentiment analysis.
